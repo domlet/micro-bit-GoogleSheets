@@ -23,7 +23,10 @@
     connectButton.addEventListener('click', () => {
       // Request a Bluetooth device using the Web Bluetooth API
       navigator.bluetooth.requestDevice({
-        acceptAllDevices: true,  // Accept all Bluetooth devices
+        filters: [{
+          namePrefix: 'BBC micro:bit',
+        }],
+        // acceptAllDevices: true,  // Accept all Bluetooth devices
         optionalServices: []     // No specific services requested
       })
         .then(device => {
