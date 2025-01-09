@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bluetooth Connection Example</title>
+</head>
+
+<body>
+  <h1>Web Bluetooth Connection Example</h1>
+  <button id="connectButton">Connect to Bluetooth Device</button>
+  <p id="status">Status: Not connected</p>
+  <p id="deviceName">Device Name: N/A</p>
+
+  <script>
+    // Get references to the HTML elements
+    const connectButton = document.getElementById('connectButton');
+    const statusText = document.getElementById('status');
+    const deviceNameText = document.getElementById('deviceName');
+
+    // Event listener for the "Connect to Bluetooth Device" button
+    connectButton.addEventListener('click', () => {
+      // Request a Bluetooth device using the Web Bluetooth API
+      navigator.bluetooth.requestDevice({
+        acceptAllDevices: true,  // Accept all Bluetooth devices
+        optionalServices: []     // No specific services requested
+      })
+        .then(device => {
+          // Connection is successful, update the status
+          statusText.textContent = 'Status: Connected';
+          deviceNameText.textContent = 'Device Name: ' + device.name;
+          console.log('Connected to Bluetooth device:', device.name);
+        })
+        .catch(error => {
+          // Handle errors, such as user rejection or no Bluetooth devices
+          statusText.textContent = 'Status: Failed to connect';
+          console.error('Error connecting to Bluetooth device:', error);
+        });
+    });
+  </script>
+</body>
+
+</html>
