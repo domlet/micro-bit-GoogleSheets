@@ -1,4 +1,5 @@
 <html>
+
 <head>
     <title>BBC micro:bit Update Google Sheets</title>
     <meta name="description" content="micro:bit Update Google Sheets with Web Bluetooth.">
@@ -86,10 +87,12 @@
         paper-button.indigo {
             background-color: var(--paper-indigo-500);
             color: white;
+
             --paper-button-raised-keyboard-focus: {
                 background-color: var(--paper-pink-a200) !important;
                 color: white !important;
             }
+
             ;
         }
     </style>
@@ -97,47 +100,47 @@
 
 <body unresolved>
     <template id="template" is="dom-bind">
-      <div id="cards">
-        <paper-card heading="BBC micro:bit Update Google Sheets">
-          <div class="card-content">
-            <paper-toggle-button class="blue" id="connect">Connect</paper-toggle-button>
-            <paper-progress id="progress" indeterminate></paper-progress>
-          </div>
-        </paper-card>
+        <div id="cards">
+            <paper-card heading="BBC micro:bit Update Google Sheets">
+                <div class="card-content">
+                    <paper-toggle-button class="blue" id="connect">Connect</paper-toggle-button>
+                    <paper-progress id="progress" indeterminate></paper-progress>
+                </div>
+            </paper-card>
 
 
 
-        <paper-dialog id="no-bluetooth">
-          <h2>No Web Bluetooth</h2>
-          <p>The Web Bluetooth API is missing. Please enable it at
-          chrome://flags/#enable-web-bluetooth and try again.</p>
-        </paper-dialog>
+            <paper-dialog id="no-bluetooth">
+                <h2>No Web Bluetooth</h2>
+                <p>The Web Bluetooth API is missing. Please enable it at
+                    chrome://flags/#enable-web-bluetooth and try again.</p>
+            </paper-dialog>
 
-        <paper-dialog id="errorDialog">
-          <h2>Error</h2>
-          <p>Could not connect to bluetooth device!</p>
-        </paper-dialog>
-      </div>
+            <paper-dialog id="errorDialog">
+                <h2>Error</h2>
+                <p>Could not connect to bluetooth device!</p>
+            </paper-dialog>
+        </div>
     </template>
 
-     <script>
+    <script>
         'use strict';
         document.addEventListener('WebComponentsReady', () => {
-     
+
             let connectToggle = document.querySelector('#connect');
             let progress = document.querySelector('#progress');
             let dialog = document.querySelector('#errorDialog');
 
             let gattServer;
-            
+
             let commandService;
             let ButtonACharacteristic;      //for button A
             let ButtonBCharacteristic;      //for button B
-            
+
             let busy = false;
             let commandQueue = [];
             progress.hidden = true;
-            
+
             /**
              * Check if browser supports Web Bluetooth API.
              */
@@ -153,13 +156,13 @@
                 busy = false;
                 progress.hidden = true;
                 gattServer = null;
-                                
+
                 ButtonACharacteristic = null;
                 ButtonBCharacteristic = null;
                 commandService = null;
-                
+
                 commandQueue = []
-                
+
                 connectToggle.checked = false;
             }
 
@@ -172,7 +175,7 @@
                 dialog.open();
             }
 
-        
+
             function handleCharacteristicValueChanged1(event) {
                 //Button A
                 let value = event.target.value;
@@ -181,12 +184,12 @@
                 // In the "real" world, you'd use data.getUint8, data.getUint16 or even
                 // TextDecoder to process raw data bytes.
                 for (let i = 0; i < value.byteLength; i++) {
-                  a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
+                    a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
                 }
-                if (a.join(' ') == '0x01' || a.join(' ') == '0x02') 
+                if (a.join(' ') == '0x01' || a.join(' ') == '0x02')
                     console.log('A');
-                    updateGoogleSheets();
-                
+                updateGoogleSheets();
+
             }
 
             function handleCharacteristicValueChanged2(event) {
@@ -197,11 +200,11 @@
                 // In the "real" world, you'd use data.getUint8, data.getUint16 or even
                 // TextDecoder to process raw data bytes.
                 for (let i = 0; i < value.byteLength; i++) {
-                  a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
+                    a.push('0x' + ('00' + value.getUint8(i).toString(16)).slice(-2));
                 }
-                if (a.join(' ') == '0x01' || a.join(' ') == '0x02') 
+                if (a.join(' ') == '0x01' || a.join(' ') == '0x02')
                     console.log('B');
-                    
+
             }
 
 
@@ -209,22 +212,22 @@
                 let serializedData = 'id=' + gattServer.device.id + '&name=' + gattServer.device.name;
 
                 let request = $.ajax({
-                    url: "https://script.google.com/macros/s/AKfycbye4JItulVj02zlhCKGXNqOcTxzRUoPRI10qdDJ5XezBsBBgTs/exec",
+                    url: "https://script.google.com/macros/s/AKfycbwyHZ04HTxuIv_M4OPyIUWZpwZ_O5vDsufiHXiI-vlMdwHIjDZOaLaJrk1zQqDwpoAE/exec",
                     type: "post",
                     data: serializedData
                 });
-    
+
                 // callback handler that will be called on success
-                request.done(function (response, textStatus, jqXHR){
+                request.done(function (response, textStatus, jqXHR) {
                     // log a message to the console
                     console.log("Hooray, it worked!");
                 });
-    
+
                 // callback handler that will be called on failure
-                request.fail(function (jqXHR, textStatus, errorThrown){
+                request.fail(function (jqXHR, textStatus, errorThrown) {
                     // log the error to the console
                     console.error(
-                        "The following error occured: "+
+                        "The following error occured: " +
                         textStatus, errorThrown
                     );
                 });
@@ -245,11 +248,11 @@
                     progress.hidden = false;
                     if (ButtonACharacteristic == null && ButtonBCharacteristic == null) {
                         navigator.bluetooth.requestDevice({
-                                filters: [{
-                                    namePrefix: 'BBC micro:bit',
-                                }],
-                                optionalServices: ['e95d9882-251d-470a-a062-fa1922dfa9a8'], //BUTTONSERVICE_SERVICE_UUID
-                            })
+                            filters: [{
+                                namePrefix: 'BBC micro:bit',
+                            }],
+                            optionalServices: ['e95d9882-251d-470a-a062-fa1922dfa9a8'], //BUTTONSERVICE_SERVICE_UUID
+                        })
                             .then(device => {
                                 console.log('Connecting to GATT Server...');
                                 return device.gatt.connect();
@@ -273,11 +276,11 @@
                                 console.log('> Found Button A characteristic - Start Notification Button 1');
                                 ButtonACharacteristic = characteristic;
                                 return ButtonACharacteristic.startNotifications().then(_ => {
-                                  console.log('> Notifications started');
-                                  ButtonACharacteristic.addEventListener('characteristicvaluechanged',
-                                      handleCharacteristicValueChanged1);
+                                    console.log('> Notifications started');
+                                    ButtonACharacteristic.addEventListener('characteristicvaluechanged',
+                                        handleCharacteristicValueChanged1);
                                 });
-                            })                            
+                            })
                             .then(service => {
                                 console.log('> Found command service Button B');
                                 return commandService.getCharacteristic('e95dda91-251d-470a-a062-fa1922dfa9a8'); //BUTTON2STATE_CHARACTERISTIC_UUID
@@ -286,9 +289,9 @@
                                 console.log('> Found Button B characteristic - Start Notification Button 2');
                                 ButtonBCharacteristic = characteristic;
                                 return ButtonBCharacteristic.startNotifications().then(_ => {
-                                  console.log('> Notifications started');
-                                  ButtonBCharacteristic.addEventListener('characteristicvaluechanged',
-                                      handleCharacteristicValueChanged2);
+                                    console.log('> Notifications started');
+                                    ButtonBCharacteristic.addEventListener('characteristicvaluechanged',
+                                        handleCharacteristicValueChanged2);
                                     progress.hidden = true;
                                 });
                             })
