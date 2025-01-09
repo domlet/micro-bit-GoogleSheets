@@ -147,7 +147,7 @@
             if (navigator.bluetooth == undefined) {
                 document.getElementById("no-bluetooth").style.display = "block";
                 document.getElementById("no-bluetooth").open();
-                console.log('BT undefined');
+                console.log('BT undefined'); // No Web Bluetooth API
             }
 
             /**
@@ -249,9 +249,9 @@
                     progress.hidden = false;
                     if (ButtonACharacteristic == null && ButtonBCharacteristic == null) {
                         navigator.bluetooth.requestDevice({
-                            filters: [{
-                                namePrefix: 'BBC micro:bit',
-                            }],
+                            //  filters: [{
+                            //      namePrefix: 'BBC micro:bit',
+                            //  }],
                             optionalServices: ['e95d9882-251d-470a-a062-fa1922dfa9a8'], //BUTTONSERVICE_SERVICE_UUID
                         })
                             .then(device => {
